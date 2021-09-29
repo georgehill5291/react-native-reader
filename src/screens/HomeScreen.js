@@ -55,8 +55,10 @@ const HomeScreen = ({navigation}) => {
     // alert('long press');
     // await removeFunction(book);
     // getLocalBook();
-    setRemoveBookModal(true);
-    setRemoveBookItem(book);
+    if (book.localFile) {
+      setRemoveBookModal(true);
+      setRemoveBookItem(book);
+    }
   };
 
   const removeFunction = async () => {
