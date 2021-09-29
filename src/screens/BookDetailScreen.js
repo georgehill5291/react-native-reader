@@ -27,18 +27,26 @@ const BookDetailScreen = ({route, navigation}) => {
     findBookById,
   } = useContext(BookContext);
 
+  const [localBookDetail, setLocalBookDetail] = useState(null);
+
   const [modalVisible, setModalVisible] = useState(false);
   const [processPercent, setProcessPercent] = useState(0);
 
   useEffect(async () => {
-    findBookById(bookId);
     let localBooks = await Storage.getItem('downloadedBooks');
-    console.log('localBook', localBooks);
-    // const currentLocalBook = localBooks.find(t => t._id === bookId);
-    // if (currentLocalBook) {
-    //   alert(currentLocalBook.title['en']);
-    // }
+    // console.log('localBook', localBooks);
+    const currentLocalBook = localBooks.find(t => t._id === bookId);
+    if (currentLocalBook) {
+      // alert(currentLocalBook.localFile);
+      setLocalBookDetail(currentLocalBook);
+    } else {
+      findBookById(bookId);
+    }
   }, []);
+
+  useEffect(async () => {
+    setLocalBookDetail(bookDetail);
+  }, [bookDetail]);
 
   const onPressDownload = () => {
     const url =
@@ -63,18 +71,25 @@ const BookDetailScreen = ({route, navigation}) => {
       .then(async () => {
         // success
         setModalVisible(false);
+        const newBook = {
+          ...bookDetail,
+          islocal: true,
+          localFile: localFile,
+        };
+        setLocalBookDetail(newBook);
+
         let currentLocalBooks = await Storage.getItem('downloadedBooks');
         console.log('currentLocalBooks', currentLocalBooks);
         if (currentLocalBooks) {
           var isExist = currentLocalBooks.find(a => a._id === bookDetail._id);
           if (!isExist) {
-            currentLocalBooks.push(bookDetail);
-            console.log('multi books', currentLocalBooks);
+            currentLocalBooks.push(newBook);
+            // console.log('multi books', currentLocalBooks);
             await Storage.setItem('downloadedBooks', currentLocalBooks);
           }
         } else {
           let books = [];
-          books.push(bookDetail);
+          books.push(newBook);
           await Storage.setItem('downloadedBooks', books);
         }
       })
@@ -84,11 +99,15 @@ const BookDetailScreen = ({route, navigation}) => {
       });
   };
 
+  const onPressRead = () => {
+    FileViewer.open(localBookDetail.localFile);
+  };
+
   const processProps = {modalVisible, setModalVisible, processPercent};
 
   return (
     <View>
-      {bookDetail && (
+      {localBookDetail && (
         <Box
           rounded="lg"
           overflow="hidden"
@@ -111,7 +130,7 @@ const BookDetailScreen = ({route, navigation}) => {
                 key={new Date().getTime()}
                 source={{
                   uri:
-                    bookDetail.imageFile.imageUrl.replace(
+                    localBookDetail.imageFile.imageUrl.replace(
                       '-original',
                       '-related',
                     ) +
@@ -142,7 +161,7 @@ const BookDetailScreen = ({route, navigation}) => {
           <Stack p="4" space={3}>
             <Stack space={2}>
               <Heading size="md" ml="-1">
-                {bookDetail.title['en']}
+                {localBookDetail.title['en']}
               </Heading>
               <Text
                 fontSize="xs"
@@ -159,9 +178,9 @@ const BookDetailScreen = ({route, navigation}) => {
               </Text>
             </Stack>
             <Text fontWeight="400">
-              {bookDetail.description['en'].replace(/<[^>]+>/g, '')}
+              {localBookDetail.description['en'].replace(/<[^>]+>/g, '')}
             </Text>
-            <HStack
+            {/* <HStack
               alignItems="center"
               space={4}
               justifyContent="space-between">
@@ -175,13 +194,21 @@ const BookDetailScreen = ({route, navigation}) => {
                   6 mins ago
                 </Text>
               </HStack>
-            </HStack>
+            </HStack> */}
           </Stack>
-          <TouchableOpacity
-            onPress={onPressDownload}
-            style={styles.downLoadButtonText}>
-            <Text>Download</Text>
-          </TouchableOpacity>
+          {localBookDetail.localFile ? (
+            <TouchableOpacity
+              onPress={onPressRead}
+              style={styles.downLoadButtonText}>
+              <Text>Read</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              onPress={onPressDownload}
+              style={styles.downLoadButtonText}>
+              <Text>Download</Text>
+            </TouchableOpacity>
+          )}
         </Box>
       )}
       <ProcessBar {...processProps} />

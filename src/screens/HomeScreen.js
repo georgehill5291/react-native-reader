@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useReducer, useState} from 'react';
 import {
   Button,
   FlatList,
@@ -15,6 +15,7 @@ import {BookContext} from '../context/BookContext';
 import ProgressCircle from 'react-native-progress-circle';
 import Storage from '../helper/Storage';
 import {useIsFocused} from '@react-navigation/native';
+import DeletePopup from '../components/shared/DeletePopup';
 
 const HomeScreen = ({navigation}) => {
   const {
@@ -30,6 +31,9 @@ const HomeScreen = ({navigation}) => {
     getLocalBook,
   } = useContext(BookContext);
 
+  const [removeBookModal, setRemoveBookModal] = useState(false);
+  const [removeBookItem, setRemoveBookItem] = useState(null);
+
   const isFocused = useIsFocused();
 
   useEffect(() => {
@@ -40,16 +44,37 @@ const HomeScreen = ({navigation}) => {
 
   useEffect(() => {
     getLocalBook();
-  }, [useIsFocused]);
+  }, [isFocused]);
 
-  onPressBook = book => {
+  const onPressBook = book => {
     console.log(book);
     navigation.navigate('BookDetail', {bookId: book._id});
   };
 
+  const onLongPressBook = async book => {
+    // alert('long press');
+    // await removeFunction(book);
+    // getLocalBook();
+    setRemoveBookModal(true);
+    setRemoveBookItem(book);
+  };
+
+  const removeFunction = async () => {
+    let localBooks = await Storage.getItem('downloadedBooks');
+    // console.log('localBook', localBooks);
+    const currentLocalBooks = localBooks.filter(
+      t => t._id !== removeBookItem._id,
+    );
+    await Storage.setItem('downloadedBooks', currentLocalBooks);
+    setRemoveBookModal(false);
+    getLocalBook();
+  };
+
   const renderItem = ({item}) => (
     <View style={styles.container}>
-      <TouchableOpacity onPress={onPressBook.bind(this, item)}>
+      <TouchableOpacity
+        onPress={onPressBook.bind(this, item)}
+        onLongPress={onLongPressBook.bind(this, item)}>
         <View style={styles.card_template}>
           <Image
             key={new Date()}
@@ -66,6 +91,7 @@ const HomeScreen = ({navigation}) => {
     </View>
   );
 
+  const removeBookProps = {removeBookModal, setRemoveBookModal, removeFunction};
   return (
     <View>
       <View style={styles.categoryWrapper}>
@@ -90,6 +116,7 @@ const HomeScreen = ({navigation}) => {
         renderItem={renderItem}
         keyExtractor={item => item._id}
       />
+      <DeletePopup {...removeBookProps} />
     </View>
   );
 };
