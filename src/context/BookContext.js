@@ -5,6 +5,7 @@ import {
   BOOK_LOADED_SUCCESS,
   FIND_BOOK_BY_ID,
   LOCAL_BOOK_LOADED_SUCCESS,
+  BOOK_4_HOME_LOADED_SUCCESS,
   apiUrl,
 } from '../helper/ConstUtil';
 import Storage from '../helper/Storage';
@@ -24,16 +25,21 @@ export const BookContext = createContext({
   getBook: () => {},
   findBookById: () => {},
   getLocalBook: () => {},
+  getBook4Home: () => {},
 });
 
 const BookContextProvider = ({children}) => {
   //reducer
   const [bookState, dispatch] = useReducer(bookReducer, defaultData);
 
-  //get News
-  const getBook = async () => {
+  //get book
+  const getBook = async (title, offset, length) => {
     try {
-      const response = await axios.get(`${apiUrl}/books`);
+      const response = await axios.get(
+        `${apiUrl}/books?title=${title ?? ''}&offset=${offset ?? 0}&length=${
+          length ?? 0
+        }`,
+      );
 
       //alert(response);
 
@@ -45,6 +51,27 @@ const BookContextProvider = ({children}) => {
             totalPages: response.data.books.totalPages,
             currentPage: response.data.books.page,
             total: response.data.books.totalDocs,
+          },
+        });
+      }
+    } catch (error) {
+      // ADD THIS THROW error
+      alert(error.message);
+    }
+  };
+
+  //get book 4 homepage
+  const getBook4Home = async () => {
+    try {
+      const response = await axios.get(`${apiUrl}/books/listing4home`);
+
+      console.log('getBook4Home:', response.data.data);
+
+      if (response.data.success) {
+        dispatch({
+          type: BOOK_4_HOME_LOADED_SUCCESS,
+          payload: {
+            bookListing4Home: response.data.data,
           },
         });
       }
@@ -80,7 +107,7 @@ const BookContextProvider = ({children}) => {
     try {
       const response = await axios.get(`${apiUrl}/books/${bookId}`);
 
-      // alert(response.data.success);
+      console.log('findBookById', response.data.book);
 
       dispatch({
         type: FIND_BOOK_BY_ID,
@@ -104,6 +131,7 @@ const BookContextProvider = ({children}) => {
     getBook: getBook,
     findBookById,
     getLocalBook,
+    getBook4Home,
   };
 
   return (

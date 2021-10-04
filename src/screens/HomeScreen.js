@@ -10,24 +10,31 @@ import {
   TouchableOpacity,
   Modal,
   Pressable,
+  BackHandler,
 } from 'react-native';
 import {BookContext} from '../context/BookContext';
 import ProgressCircle from 'react-native-progress-circle';
 import Storage from '../helper/Storage';
 import {useIsFocused} from '@react-navigation/native';
 import DeletePopup from '../components/shared/DeletePopup';
+import DownloadedBookScreen from './DownloadedBookScreen';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+
+const Tab = createBottomTabNavigator();
 
 const HomeScreen = ({navigation}) => {
   const {
     bookState: {
-      localBookListing,
       bookListing,
+      bookListing4Home,
       bookListingLoading,
       totalPages,
       currentPage,
       total,
     },
     getBook,
+    getBook4Home,
     getLocalBook,
   } = useContext(BookContext);
 
@@ -38,7 +45,7 @@ const HomeScreen = ({navigation}) => {
 
   useEffect(() => {
     //Storage.removeItem('downloadedBooks');
-    getBook();
+    getBook4Home();
     getLocalBook();
   }, []);
 
@@ -72,6 +79,8 @@ const HomeScreen = ({navigation}) => {
     getLocalBook();
   };
 
+  const removeBookProps = {removeBookModal, setRemoveBookModal, removeFunction};
+
   const renderItem = ({item}) => (
     <View style={styles.container}>
       <TouchableOpacity
@@ -93,33 +102,61 @@ const HomeScreen = ({navigation}) => {
     </View>
   );
 
-  const removeBookProps = {removeBookModal, setRemoveBookModal, removeFunction};
-  return (
-    <View>
-      <View style={styles.categoryWrapper}>
-        <Text style={styles.categoryText}>Downloaded Book --</Text>
-      </View>
-      {localBookListing && localBookListing.length > 0 && (
-        <FlatList
-          horizontal={true}
-          data={localBookListing}
-          renderItem={renderItem}
-          keyExtractor={item => item._id}
-        />
-      )}
-
-      <View style={styles.categoryWrapper}>
-        <Text style={styles.categoryText}>Bookshelf --</Text>
-      </View>
-
-      <FlatList
-        horizontal={true}
-        data={bookListing}
-        renderItem={renderItem}
-        keyExtractor={item => item._id}
-      />
+  const ListingView = () => (
+    <ScrollView>
+      {bookListing4Home &&
+        bookListing4Home.length > 0 &&
+        bookListing4Home.map(bookListingByType => (
+          <View key={bookListingByType.type}>
+            <View style={styles.categoryWrapper}>
+              <Text style={styles.categoryText}>
+                {bookListingByType.type} --
+              </Text>
+            </View>
+            <FlatList
+              horizontal={true}
+              data={bookListingByType.books}
+              renderItem={renderItem}
+              keyExtractor={item => item._id}
+            />
+          </View>
+        ))}
       <DeletePopup {...removeBookProps} />
-    </View>
+    </ScrollView>
+  );
+
+  return (
+    <Tab.Navigator
+      initialRouteName="Books"
+      screenOptions={{
+        tabBarActiveTintColor: '#e91e63',
+      }}>
+      <Tab.Screen
+        name="Downloaded Book"
+        component={DownloadedBookScreen}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({color, size}) => (
+            <MaterialCommunityIcons name="book" color={color} size={26} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Books"
+        component={ListingView}
+        options={{
+          headerShown: false,
+          tabBarLabel: 'Books',
+          tabBarIcon: ({color, size}) => (
+            <MaterialCommunityIcons
+              name="book-search-outline"
+              color={color}
+              size={26}
+            />
+          ),
+        }}
+      />
+    </Tab.Navigator>
   );
 };
 

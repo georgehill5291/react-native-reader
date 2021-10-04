@@ -35,10 +35,14 @@ const BookDetailScreen = ({route, navigation}) => {
   useEffect(async () => {
     let localBooks = await Storage.getItem('downloadedBooks');
     // console.log('localBook', localBooks);
-    const currentLocalBook = localBooks.find(t => t._id === bookId);
-    if (currentLocalBook) {
-      // alert(currentLocalBook.localFile);
-      setLocalBookDetail(currentLocalBook);
+    if (localBooks) {
+      const currentLocalBook = localBooks.find(t => t._id === bookId);
+      if (currentLocalBook) {
+        // alert(currentLocalBook.localFile);
+        setLocalBookDetail(currentLocalBook);
+      } else {
+        findBookById(bookId);
+      }
     } else {
       findBookById(bookId);
     }
@@ -49,9 +53,9 @@ const BookDetailScreen = ({route, navigation}) => {
   }, [bookDetail]);
 
   const onPressDownload = () => {
-    const url =
-      'https://g-node-test.s3.ap-southeast-1.amazonaws.com/bookFile/doremon1.pdf';
-    const localFile = `${RNFS.ExternalDirectoryPath}/temporaryfile.pdf`;
+    const url = bookDetail.bookFile.fileUrl;
+    const fileName = url.split('/').pop();
+    const localFile = `${RNFS.ExternalDirectoryPath}/${fileName}`;
 
     const options = {
       fromUrl: url,
@@ -96,6 +100,7 @@ const BookDetailScreen = ({route, navigation}) => {
       .catch(error => {
         // error
         setModalVisible(false);
+        alert(error);
       });
   };
 

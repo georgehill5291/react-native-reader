@@ -1,16 +1,30 @@
-import React, {useEffect} from 'react';
-import {Dimensions, StyleSheet, Text, View} from 'react-native';
+import React, {useEffect, useRef} from 'react';
+import {Animated, Dimensions, StyleSheet, Text, View} from 'react-native';
 
 const SplashScreen = ({navigation, route}) => {
+  const fadeAnim = useRef(new Animated.Value(0)).current; // Initial value for opacity: 0
+
+  React.useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 1000,
+      useNativeDriver: true, // <-- Add this
+    }).start();
+  }, [fadeAnim]);
+
   useEffect(() => {
     setTimeout(() => {
-      navigation.navigate('Home');
+      navigation.replace('Home');
     }, 3000);
   }, []);
   return (
-    <View style={styles.splashWrapper}>
-      <Text style={styles.splashText}>Splash Screen</Text>
-    </View>
+    <Animated.View // Special animatable View
+      style={{
+        ...styles.splashWrapper,
+        opacity: fadeAnim, // Bind opacity to animated value
+      }}>
+      <Text style={styles.splashText}>G-BOOK</Text>
+    </Animated.View>
   );
 };
 
@@ -29,6 +43,7 @@ const styles = StyleSheet.create({
   splashText: {
     fontWeight: 'bold',
     textAlign: 'center',
+    fontSize: 24,
   },
 });
 

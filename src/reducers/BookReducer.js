@@ -2,11 +2,17 @@ import {
   BOOK_LOADED_SUCCESS,
   FIND_BOOK_BY_ID,
   LOCAL_BOOK_LOADED_SUCCESS,
+  BOOK_4_HOME_LOADED_SUCCESS,
 } from '../helper/ConstUtil';
 
 export const bookReducer = (state, action) => {
   console.log('action', action);
   switch (action.type) {
+    case BOOK_4_HOME_LOADED_SUCCESS:
+      return {
+        ...state,
+        bookListing4Home: action.payload.bookListing4Home,
+      };
     case BOOK_LOADED_SUCCESS:
       return {
         ...state,

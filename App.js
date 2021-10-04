@@ -50,10 +50,14 @@ const App = () => {
             <Stack.Screen
               name="Home"
               component={HomeScreen}
-              options={{title: 'Home'}}
+              options={{headerShown: false}}
             />
             <Stack.Screen name="Profile" component={ProfileScreen} />
-            <Stack.Screen name="BookDetail" component={BookDetailScreen} />
+            <Stack.Screen
+              name="BookDetail"
+              component={BookDetailScreen}
+              options={{headerShown: false}}
+            />
           </Stack.Navigator>
         </NavigationContainer>
       </NativeBaseProvider>
