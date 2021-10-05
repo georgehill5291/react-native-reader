@@ -11,6 +11,8 @@ import {
   Modal,
   Pressable,
   BackHandler,
+  TextInput,
+  SafeAreaView,
 } from 'react-native';
 import {BookContext} from '../context/BookContext';
 import ProgressCircle from 'react-native-progress-circle';
@@ -20,6 +22,9 @@ import DeletePopup from '../components/shared/DeletePopup';
 import DownloadedBookScreen from './DownloadedBookScreen';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import SingleBook from '../components/Book/SingleBook';
+import {SearchBar} from 'react-native-elements';
+import PublicHeader from '../components/shared/PublicHeader';
 
 const Tab = createBottomTabNavigator();
 
@@ -38,9 +43,6 @@ const HomeScreen = ({navigation}) => {
     getLocalBook,
   } = useContext(BookContext);
 
-  const [removeBookModal, setRemoveBookModal] = useState(false);
-  const [removeBookItem, setRemoveBookItem] = useState(null);
-
   const isFocused = useIsFocused();
 
   useEffect(() => {
@@ -53,57 +55,9 @@ const HomeScreen = ({navigation}) => {
     getLocalBook();
   }, [isFocused]);
 
-  const onPressBook = book => {
-    console.log(book);
-    navigation.navigate('BookDetail', {bookId: book._id});
-  };
-
-  const onLongPressBook = async book => {
-    // alert('long press');
-    // await removeFunction(book);
-    // getLocalBook();
-    if (book.localFile) {
-      setRemoveBookModal(true);
-      setRemoveBookItem(book);
-    }
-  };
-
-  const removeFunction = async () => {
-    let localBooks = await Storage.getItem('downloadedBooks');
-    // console.log('localBook', localBooks);
-    const currentLocalBooks = localBooks.filter(
-      t => t._id !== removeBookItem._id,
-    );
-    await Storage.setItem('downloadedBooks', currentLocalBooks);
-    setRemoveBookModal(false);
-    getLocalBook();
-  };
-
-  const removeBookProps = {removeBookModal, setRemoveBookModal, removeFunction};
-
-  const renderItem = ({item}) => (
-    <View style={styles.container}>
-      <TouchableOpacity
-        onPress={onPressBook.bind(this, item)}
-        onLongPress={onLongPressBook.bind(this, item)}>
-        <View style={styles.card_template}>
-          <Image
-            key={new Date()}
-            style={styles.card_image}
-            source={{
-              uri: item.imageFile.imageUrl,
-            }}
-          />
-          <View style={styles.text_container}>
-            <Text style={styles.card_title}>{item.title['en']}</Text>
-          </View>
-        </View>
-      </TouchableOpacity>
-    </View>
-  );
-
-  const ListingView = () => (
-    <ScrollView>
+  const ListingView = ({navigation}) => (
+    <ScrollView keyboardShouldPersistTaps="handled">
+      <PublicHeader navigation={navigation} />
       {bookListing4Home &&
         bookListing4Home.length > 0 &&
         bookListing4Home.map(bookListingByType => (
@@ -116,12 +70,13 @@ const HomeScreen = ({navigation}) => {
             <FlatList
               horizontal={true}
               data={bookListingByType.books}
-              renderItem={renderItem}
+              renderItem={({item}) => (
+                <SingleBook navigation={navigation} item={item} type="" />
+              )}
               keyExtractor={item => item._id}
             />
           </View>
         ))}
-      <DeletePopup {...removeBookProps} />
     </ScrollView>
   );
 
@@ -161,6 +116,11 @@ const HomeScreen = ({navigation}) => {
 };
 
 const styles = StyleSheet.create({
+  searchWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    padding: 5,
+  },
   categoryWrapper: {
     marginTop: 25,
     marginLeft: 30,

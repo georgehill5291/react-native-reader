@@ -18,6 +18,7 @@ import RNFS from 'react-native-fs';
 import FileViewer from 'react-native-file-viewer';
 import ProcessBar from '../components/shared/ProcessBar';
 import Storage from '../helper/Storage';
+import theme from './../assets/theme';
 
 const BookDetailScreen = ({route, navigation}) => {
   const {bookId} = route.params;
@@ -111,7 +112,7 @@ const BookDetailScreen = ({route, navigation}) => {
   const processProps = {modalVisible, setModalVisible, processPercent};
 
   return (
-    <View>
+    <View style={theme.paddingTop30}>
       {localBookDetail && (
         <Box
           rounded="lg"
@@ -179,7 +180,7 @@ const BookDetailScreen = ({route, navigation}) => {
                 fontWeight="500"
                 ml="-0.5"
                 mt="-1">
-                The Silicon Valley of India.
+                {localBookDetail.classifications.map(t => t.title).join(',')}
               </Text>
             </Stack>
             <Text fontWeight="400">

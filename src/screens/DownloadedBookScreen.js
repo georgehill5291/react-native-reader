@@ -8,6 +8,7 @@ import {
   View,
 } from 'react-native';
 import SingleBook from '../components/Book/SingleBook';
+import PublicHeader from '../components/shared/PublicHeader';
 import {BookContext} from '../context/BookContext';
 
 const DownloadedBookScreen = ({navigation}) => {
@@ -20,6 +21,7 @@ const DownloadedBookScreen = ({navigation}) => {
   }, []);
   return (
     <SafeAreaView>
+      <PublicHeader navigation={navigation} />
       {localBookListing && localBookListing.length > 0 && (
         <View>
           <FlatList

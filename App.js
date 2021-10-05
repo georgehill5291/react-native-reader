@@ -33,6 +33,7 @@ import SplashScreen from './src/screens/SplashScreen';
 import BookContextProvider from './src/context/BookContext';
 import {NativeBaseProvider} from 'native-base';
 import BookDetailScreen from './src/screens/BookDetailScreen';
+import SearchBookScreen from './src/screens/SearchBookScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -56,6 +57,11 @@ const App = () => {
             <Stack.Screen
               name="BookDetail"
               component={BookDetailScreen}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="SearchBookScreen"
+              component={SearchBookScreen}
               options={{headerShown: false}}
             />
           </Stack.Navigator>

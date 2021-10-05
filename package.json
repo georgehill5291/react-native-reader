@@ -19,6 +19,7 @@
     "react": "17.0.2",
     "react-native": "0.65.1",
     "react-native-cached-image": "^1.4.3",
+    "react-native-elements": "^3.4.2",
     "react-native-file-viewer": "^2.1.4",
     "react-native-fs": "^2.18.0",
     "react-native-progress-circle": "^2.1.0",
