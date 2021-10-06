@@ -1,8 +1,16 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {View, Text, StyleSheet, FlatList} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  ScrollView,
+  SafeAreaView,
+} from 'react-native';
 import {SearchBar} from 'react-native-elements';
 import SingleBook from '../components/Book/SingleBook';
 import {BookContext} from '../context/BookContext';
+import theme from './../assets/theme';
 
 const SearchBookScreen = ({navigation}) => {
   const [updateSearch, setUpdateSearch] = useState('');
@@ -34,7 +42,7 @@ const SearchBookScreen = ({navigation}) => {
   // };
 
   return (
-    <View style={styles.searchViewWrapper}>
+    <View style={theme.flex1}>
       <SearchBar
         placeholder="Type Here..."
         onChangeText={setUpdateSearch}
@@ -44,17 +52,15 @@ const SearchBookScreen = ({navigation}) => {
         // onCancel={onSubmitEditing}
       />
       {bookListing && bookListing.length > 0 && (
-        <View>
-          <FlatList
-            contentContainerStyle={{flexGrow: 1, justifyContent: 'center'}}
-            data={bookListing}
-            renderItem={({item}) => (
-              <SingleBook navigation={navigation} item={item} type="small" />
-            )}
-            keyExtractor={item => item._id}
-            numColumns={3}
-          />
-        </View>
+        <FlatList
+          contentContainerStyle={{flexGrow: 1, justifyContent: 'flex-start'}}
+          data={bookListing}
+          renderItem={({item}) => (
+            <SingleBook navigation={navigation} item={item} type="small" />
+          )}
+          keyExtractor={item => item._id}
+          numColumns={3}
+        />
       )}
     </View>
   );
@@ -63,6 +69,7 @@ const SearchBookScreen = ({navigation}) => {
 const styles = StyleSheet.create({
   searchViewWrapper: {
     paddingTop: 30,
+    flex: 1,
   },
 });
 

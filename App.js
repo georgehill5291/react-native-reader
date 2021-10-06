@@ -6,34 +6,16 @@
  * @flow strict-local
  */
 
-import React from 'react';
-import type {Node} from 'react';
-import {
-  Button,
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
-
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {NavigationContainer} from '@react-navigation/native';
-import HomeScreen from './src/screens/HomeScreen';
-import SplashScreen from './src/screens/SplashScreen';
-import BookContextProvider from './src/context/BookContext';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {NativeBaseProvider} from 'native-base';
+import React, {useEffect} from 'react';
+import {Animated, Text} from 'react-native';
+import BookContextProvider from './src/context/BookContext';
 import BookDetailScreen from './src/screens/BookDetailScreen';
+import HomeScreen from './src/screens/HomeScreen';
 import SearchBookScreen from './src/screens/SearchBookScreen';
+import SplashScreen from './src/screens/SplashScreen';
 
 const Stack = createNativeStackNavigator();
 

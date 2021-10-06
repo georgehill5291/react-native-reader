@@ -1,11 +1,16 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {TouchableOpacity, View, StyleSheet, Dimensions} from 'react-native';
+import {
+  TouchableOpacity,
+  View,
+  StyleSheet,
+  Dimensions,
+  ActivityIndicator,
+} from 'react-native';
 import {BookContext} from '../context/BookContext';
 import {
   Box,
   Heading,
   AspectRatio,
-  Image,
   Text,
   Center,
   HStack,
@@ -19,6 +24,7 @@ import FileViewer from 'react-native-file-viewer';
 import ProcessBar from '../components/shared/ProcessBar';
 import Storage from '../helper/Storage';
 import theme from './../assets/theme';
+import {Image} from 'react-native-elements';
 
 const BookDetailScreen = ({route, navigation}) => {
   const {bookId} = route.params;
@@ -112,7 +118,7 @@ const BookDetailScreen = ({route, navigation}) => {
   const processProps = {modalVisible, setModalVisible, processPercent};
 
   return (
-    <View style={theme.paddingTop30}>
+    <View>
       {localBookDetail && (
         <Box
           rounded="lg"
@@ -131,22 +137,16 @@ const BookDetailScreen = ({route, navigation}) => {
             backgroundColor: 'gray.50',
           }}>
           <Box>
-            <AspectRatio ratio={16 / 9}>
-              <Image
-                key={new Date().getTime()}
-                source={{
-                  uri:
-                    localBookDetail.imageFile.imageUrl.replace(
-                      '-original',
-                      '-related',
-                    ) +
-                    '?time' +
-                    new Date().getTime(),
-                  headers: {Pragma: 'no-cache'},
-                }}
-                alt="image"
-              />
-            </AspectRatio>
+            <Image
+              source={{
+                uri: localBookDetail.imageFile.imageUrl.replace(
+                  '-original',
+                  '-related',
+                ),
+              }}
+              style={{width: '100%', height: 200}}
+              PlaceholderContent={<ActivityIndicator />}
+            />
             <Center
               bg="violet.500"
               _dark={{

@@ -5,6 +5,7 @@ const theme = {
     lightGray: '#EBEBEB',
     gray: '#CACACA',
     black: '#000000',
+    steelblue: 'steelblue',
   },
   spacing: {
     xs: 4,
@@ -47,6 +48,18 @@ const theme = {
   },
   paddingTop30: {
     paddingTop: 30,
+  },
+  flex1: {
+    flex: 1,
+  },
+  paddingBottom30: {
+    paddingBottom: 30,
+  },
+  paddingBottom60: {
+    paddingBottom: 60,
+  },
+  paddingBottom90: {
+    paddingBottom: 90,
   },
 };
 

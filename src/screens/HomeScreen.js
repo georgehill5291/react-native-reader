@@ -13,6 +13,9 @@ import {
   BackHandler,
   TextInput,
   SafeAreaView,
+  Animated,
+  YellowBox,
+  LogBox,
 } from 'react-native';
 import {BookContext} from '../context/BookContext';
 import ProgressCircle from 'react-native-progress-circle';
@@ -25,6 +28,8 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import SingleBook from '../components/Book/SingleBook';
 import {SearchBar} from 'react-native-elements';
 import PublicHeader from '../components/shared/PublicHeader';
+import theme from './../assets/theme';
+import CarouselTopBook from '../components/shared/CarouselTopBook';
 
 const Tab = createBottomTabNavigator();
 
@@ -47,6 +52,7 @@ const HomeScreen = ({navigation}) => {
 
   useEffect(() => {
     //Storage.removeItem('downloadedBooks');
+    getBook('', 0, 5);
     getBook4Home();
     getLocalBook();
   }, []);
@@ -56,28 +62,34 @@ const HomeScreen = ({navigation}) => {
   }, [isFocused]);
 
   const ListingView = ({navigation}) => (
-    <ScrollView keyboardShouldPersistTaps="handled">
+    <View style={theme.flex1}>
       <PublicHeader navigation={navigation} />
-      {bookListing4Home &&
-        bookListing4Home.length > 0 &&
-        bookListing4Home.map(bookListingByType => (
-          <View key={bookListingByType.type}>
-            <View style={styles.categoryWrapper}>
-              <Text style={styles.categoryText}>
-                {bookListingByType.type} --
-              </Text>
+
+      <ScrollView>
+        {bookListing && bookListing.length > 0 && (
+          <CarouselTopBook navigation={navigation} bookListing={bookListing} />
+        )}
+        {bookListing4Home &&
+          bookListing4Home.length > 0 &&
+          bookListing4Home.map(bookListingByType => (
+            <View key={bookListingByType.type}>
+              <View style={styles.categoryWrapper}>
+                <Text style={styles.categoryText}>
+                  {bookListingByType.type}
+                </Text>
+              </View>
+              <FlatList
+                horizontal={true}
+                data={bookListingByType.books}
+                renderItem={({item}) => (
+                  <SingleBook navigation={navigation} item={item} type="" />
+                )}
+                keyExtractor={item => item._id}
+              />
             </View>
-            <FlatList
-              horizontal={true}
-              data={bookListingByType.books}
-              renderItem={({item}) => (
-                <SingleBook navigation={navigation} item={item} type="" />
-              )}
-              keyExtractor={item => item._id}
-            />
-          </View>
-        ))}
-    </ScrollView>
+          ))}
+      </ScrollView>
+    </View>
   );
 
   return (
