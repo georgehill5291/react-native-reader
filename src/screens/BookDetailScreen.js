@@ -25,6 +25,7 @@ import ProcessBar from '../components/shared/ProcessBar';
 import Storage from '../helper/Storage';
 import theme from './../assets/theme';
 import {Image} from 'react-native-elements';
+import PushNotification from 'react-native-push-notification';
 
 const BookDetailScreen = ({route, navigation}) => {
   const {bookId} = route.params;
@@ -87,8 +88,16 @@ const BookDetailScreen = ({route, navigation}) => {
           islocal: true,
           localFile: localFile,
         };
-        setLocalBookDetail(newBook);
 
+        PushNotification.localNotification({
+          /* Android Only Properties */
+          channelId: 'channel-id', // (required) channelId, if the channel doesn't exist, notification will not trigger.
+          ticker: 'My Notification Ticker', // (optional)
+          title: 'My Notification Title', // (optional)
+          message: 'My Notification Message', // (required)
+        });
+
+        setLocalBookDetail(newBook);
         let currentLocalBooks = await Storage.getItem('downloadedBooks');
         console.log('currentLocalBooks', currentLocalBooks);
         if (currentLocalBooks) {
